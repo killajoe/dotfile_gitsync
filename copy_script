@@ -14,5 +14,5 @@ cp -R /etc/{kernel,dracut.conf.d,default,modprobe.d,modules-load.d} $HOME/.dotfi
 cp -a /etc/{environment,fstab} $HOME/.dotfiles/dots/ETC/
 
 # save also your dotfile scripts
-cp -a $HOME/.local/bin/{copy_cript,codeberg-dotfiles} $HOME/.dotfiles/dots/.local/bin/
+cp -a $HOME/.local/bin/{copy_cript,github-dotfiles,github-tagclean} $HOME/.dotfiles/dots/.local/bin/
 
