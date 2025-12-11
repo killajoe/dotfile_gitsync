@@ -23,12 +23,12 @@ github-dotfile.service
 
 github-dotfile.timer
 
-1. create a new repo at your github git `reponame` and indeed, set it to private.
+1. create a new repo at your github, and indeed, set it to private.
 
 2. set it up locally:
 
 ```
-git clone https://github.org/joekamprad/dotfile_gitsync.git
+git clone https://github.org/username/reponame.git
 cd dotfile_gitsync
 mkdir -p $HOME/.config/systemd/user/
 cp -a github-dotfile.service github-dotfile.timer $HOME/.config/systemd/user/
