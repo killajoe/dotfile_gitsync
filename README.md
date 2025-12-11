@@ -2,11 +2,11 @@
 
 **sync your dotfile with github**
 
-using *systemd --user* service/timer and a simple script to sync your dotfiles with github (or other git).
+using **systemd --user** service/timer and a simple script to sync your dotfiles with github (or other git).
 
-to avoid cleartext *token* in the script adding it to the user *systemd-service* file instead as environment variable.
+to avoid cleartext **token** in the script we simply use ssh to sync with GitHub.
 
-This will update the code and create a tag for each run on the remote repo.
+This will update the code, creating a tag for each run on the remote repo and cleans up old tags.
 
 
 **scriptfile:**
@@ -23,9 +23,9 @@ github-dotfile.service
 
 github-dotfile.timer
 
-1. create a new repo at your github, and indeed, set it to private.
+1. **create a new repo at your github, and indeed, set it to private.**
 
-2. set it up locally:
+2. **set it up locally:**
 
 ```
 git clone https://github.org/username/reponame.git
@@ -60,7 +60,7 @@ Make sure your local repo uses the SSH URL:
 `git remote set-url origin git@github.com:username.reponame.git`
 
 
-3. edit configs:
+3. **edit configs:**
 
 edit github-dotfiles to your needs:
 
@@ -77,7 +77,7 @@ Persistent=true
 
 `github-tagclean` --> edit to add username and may change tags to keep.
 
-4. enable timer to automate running the sync:
+4. **enable timer to automate running the sync:**
 
 ```
 systemctl --user daemon-reload
