@@ -1,18 +1,36 @@
 #make sure pathes exist and if not creating them
-mkdir -p $HOME/.dotfiles/dots/.local/bin $HOME/.dotfiles/dots/ETC $HOME/.dotfiles/dots/.config
+mkdir -p $HOME/.dotfiles/$REPO_NAME/.local/bin $HOME/.dotfiles/dots/ETC $HOME/.dotfiles/$REPO_NAME/.config
 
-chown -R $username:$username $HOME/..dotfiles
+chown -R $username:$username $HOME/.dotfiles
+mkdir -p "$REPO_DIR/.local/bin" "$REPO_DIR/ETC" "$REPO_DIR/.config"
+chown -R $USER_NAME:$USER_NAME "$HOME/.dotfiles/$REPO_NAME"
 
-# user dotfiles folders under .config
-cp -a $HOME/.config/{gtk-4.0,gtk-3.0,sway,waybar,gtklock,...} $HOME/.dotfiles/dots/.config/
+# adding exclude list:
+# remove all files except .git folder
+tmp=$(mktemp -d)
+rsync -a --delete --exclude='.git' "$tmp/" "$REPO_DIR/"
+rmdir "$tmp"
+
+# use rsync and exclude
+EXCLUDES=$(mktemp)   # temporary file for excludes
+
+# add any folder under ~/.config to be excluded
+cat > "$EXCLUDES" <<'EOF'
+#configfolder
+EOF
+
+# sync excluding unwanted
+rsync -a --exclude-from="$EXCLUDES" "$HOME/.config/" "$REPO_DIR/.config/"
+
+# or only copy what you list under .config:
+# cp -a $HOME/.config/{gtk-4.0,gtk-3.0,sway,waybar,gtklock,...} $HOME/.dotfiles/$REPO_NAME/.config/
 
 # user files directly in home
-cp -a $HOME/{.zsh_history,.gtkrc-2.0,.zshrc} $HOME/.dotfiles/dots/
+cp -a $HOME/{.zsh_history,.gtkrc-2.0,.zshrc} $HOME/.dotfiles/$REPO_NAME/
 
 # for systemfiles
-cp -R /etc/{kernel,dracut.conf.d,default,modprobe.d,modules-load.d} $HOME/.dotfiles/dots/ETC/
-cp -a /etc/{environment,fstab} $HOME/.dotfiles/dots/ETC/
+cp -R /etc/{kernel,dracut.conf.d,default,modprobe.d,modules-load.d} $HOME/.dotfiles/$REPO_NAME/ETC/
+cp -a /etc/{environment,fstab} $HOME/.dotfiles/$REPO_NAME//ETC/
 
 # save also your dotfile scripts
-cp -a $HOME/.local/bin/{copy_cript,github-dotfiles,github-tagclean} $HOME/.dotfiles/dots/.local/bin/
-
+cp -a $HOME/.local/bin/{copy_cript,github-dotfiles,github-tagclean} $HOME/.dotfiles/$REPO_NAME/.local/bin/
