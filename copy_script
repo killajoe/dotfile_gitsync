@@ -1,0 +1,18 @@
+#make sure pathes exist and if not creating them
+mkdir -p $HOME/.dotfiles/dots/.local/bin $HOME/.dotfiles/dots/ETC $HOME/.dotfiles/dots/.config
+
+chown -R $username:$username $HOME/..dotfiles
+
+# user dotfiles folders under .config
+cp -a $HOME/.config/{gtk-4.0,gtk-3.0,sway,waybar,gtklock,...} $HOME/.dotfiles/dots/.config/
+
+# user files directly in home
+cp -a $HOME/{.zsh_history,.gtkrc-2.0,.zshrc} $HOME/.dotfiles/dots/
+
+# for systemfiles
+cp -R /etc/{kernel,dracut.conf.d,default,modprobe.d,modules-load.d} $HOME/.dotfiles/dots/ETC/
+cp -a /etc/{environment,fstab} $HOME/.dotfiles/dots/ETC/
+
+# save also your dotfile scripts
+cp -a $HOME/.local/bin/{copy_cript,codeberg-dotfiles} $HOME/.dotfiles/dots/.local/bin/
+

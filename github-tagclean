@@ -1,0 +1,62 @@
+#!/bin/bash
+set -euo pipefail
+
+if [[ $# -lt 1 ]]; then
+    echo "Usage: $0 <keep-tag>"
+    exit 1
+fi
+
+KEEP_TAG="$1"
+REPO_URL="git@github.com:username/reponame.git"
+REPO_NAME="dots-tag-cleanup"
+
+WORKDIR=$(mktemp -d)
+cd "$WORKDIR"
+
+git clone --bare "$REPO_URL" "$REPO_NAME"
+cd "$REPO_NAME"
+
+# Fetch tags (clean remote references)
+git fetch --tags --prune
+
+# Get remote tags (without ^{} annotated tags)
+REMOTE_TAGS=$(git ls-remote --tags origin \
+  | grep -v '\^{}' \
+  | awk '{print $2}' \
+  | sed 's|refs/tags/||' \
+  | sort -r)
+
+# Keep the 7 newest + the one passed as argument
+LATEST_7=$(echo "$REMOTE_TAGS" | head -n 7)
+TAGS_TO_KEEP=$(printf "%s\n%s" "$KEEP_TAG" "$LATEST_7" | sed '/^\s*$/d' | sort -u)
+
+# Get all local tags (works in bare repo)
+LOCAL_TAGS=$(git for-each-ref --format='%(refname:strip=2)' refs/tags \
+  | sed '/^\s*$/d' \
+  | sort -u)
+
+# Tags to delete = all local tags not in the keep list
+TAGS_TO_DELETE=$(comm -23 <(echo "$LOCAL_TAGS") <(echo "$TAGS_TO_KEEP"))
+
+echo "== Local Tags =="
+echo "$LOCAL_TAGS"
+echo
+echo "== Tags to Keep (7 latest + KEEP_TAG) =="
+echo "$TAGS_TO_KEEP"
+echo
+echo "== Tags to Delete =="
+echo "$TAGS_TO_DELETE"
+echo
+
+if [[ -z "${TAGS_TO_DELETE//[$'\n']/}" ]]; then
+    echo "No tags to delete – all clean."
+else
+    for tag in $TAGS_TO_DELETE; do
+        echo "Deleting tag: $tag"
+        git tag -d "$tag"
+        git push origin ":refs/tags/$tag"
+    done
+fi
+
+cd /
+rm -rf "$WORKDIR"

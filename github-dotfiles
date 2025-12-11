@@ -1,0 +1,48 @@
+#!/bin/sh
+# github dot file sync script
+
+
+# Variables
+REPO_DIR="$HOME/.dotfiles/reponame"
+REPO_URL="git@github.com:username/reponame.git"
+REPO_NAME="reponame"
+
+# Check if repo dir exists and is a git repo
+if [ ! -d "$REPO_DIR/.git" ]; then
+    echo "Repository not found, cloning..."
+    mkdir -p "$HOME/.dotfiles"
+    git clone "$REPO_URL" "$REPO_DIR" || {
+        notify-send --expire-time=60000 --urgency=critical --icon=process-error-symbolic "FAILED! Could not clone GitHub repo"
+        exit 1
+    }
+fi
+
+date=$(date)
+shortdate=$(date +"%Y-%m-%d-%H-%M-%S")
+
+cd "$REPO_DIR" || exit 1
+
+echo "copy dotfiles filter and modify before push"
+
+# adding dotfiles copy_script
+source . ./copy_script
+
+echo "copy dotfiles filter and modify before push done"
+
+git pull
+git add --all .
+git commit -am "changes from $date"
+git push --all
+git tag -a "$shortdate" -m "Auto tag for $shortdate"
+git push origin "refs/tags/$shortdate" && \
+notify-send --expire-time=60000 --urgency=normal --icon=github "Swaydots" "Just updated your $REPO_NAME on GitHub" || \
+notify-send --expire-time=60000 --urgency=critical -i dialog-error "FAILED" "updating your $REPO_NAME on GitHub"
+
+sleep 15
+# cleanup remote tags
+"$HOME/.local/bin/github-tagclean" "$shortdate" && \
+notify-send --expire-time=60000 --urgency=normal --icon=github "Swaydots Cleaner" "Cleaned old tags $REPO_NAME on GitHub" || \
+notify-send --expire-time=60000 --urgency=critical -i dialog-error "FAILED" "cleaning old tags $REPO_NAME on GitHub"
+
+# cleanup local tags
+git fetch --prune --tags
