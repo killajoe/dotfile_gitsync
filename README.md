@@ -23,7 +23,7 @@ github-dotfile.service
 
 github-dotfile.timer
 
-1. create a new repo at your github git named `dots` and indeed, set it to private.
+1. create a new repo at your github git `reponame` and indeed, set it to private.
 
 2. set it up locally:
 
@@ -54,6 +54,7 @@ Host github.com
     IdentityFile ~/.ssh/id_ed25519_github
     IdentitiesOnly yes
 ```
+
 Make sure your local repo uses the SSH URL:
 
 `git remote set-url origin git@github.com:username.reponame.git`
@@ -72,7 +73,8 @@ OnCalendar=00/3:00
 Persistent=true
 ```
 
-`copy_script` --> edit to your needs for files you want to sync`
+`copy_script` --> edit to your needs for files you want to sync.
+
 `github-tagclean` --> edit to add username and may change tags to keep.
 
 4. enable timer to automate running the sync:
