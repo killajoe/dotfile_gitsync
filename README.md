@@ -12,6 +12,7 @@ This will update the code and create a tag for each run on the remote repo.
 **scriptfile:**
 
 `github-dotfiles` --> main script for handling sync to github
+`github-tagclean` --> removes older tags
 
 `copy_script` ---> to add your copy scriptlets for the dotfiles you want to sync
 
